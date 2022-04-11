@@ -10,8 +10,25 @@ jobs:
 
   test:
     runs-on: ubuntu-20.04
+
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: 123456
+          POSTGRES_DB: simple_bank
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v3
+
+    - name: Migrate DB
+      run: make migrateup
 
     - name: Set up Go
       uses: actions/setup-go@v3
